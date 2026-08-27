@@ -1109,7 +1109,7 @@ static void enumdisplaymodes(CHAR *device, int display)
 }
 #endif
 
-static BOOL edmcallback(HMONITOR hMonitor, HDC hDC, LPRECT lprcBounds, LPARAM lParam)
+static BOOL CALLBACK edmcallback(HMONITOR hMonitor, HDC hDC, LPRECT lprcBounds, LPARAM lParam)
 {
 	MONITORINFOEX info;
 	int destidx;
