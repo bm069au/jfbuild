@@ -919,6 +919,7 @@ static void polymost_palfade(void)
 	if ((rendmode != 3) || (qsetmode != 200)) return;
 	if (palfadedelta == 0) return;
 
+	memset(&draw, 0, sizeof(draw));
 	draw.mode = 2;	// Solid colour.
 
 	draw.colour.r = palfadergb.r / 255.f;
@@ -3480,15 +3481,18 @@ void polymost_drawsprite (int snum)
 			else { gvy = (float)tilesizy[globalpicnum]*gdo/(py[0]-py[3]-.002); gvo = -gvy*(py[3]+.001); }
 
 			//Clip sprites to ceilings/floors when no parallaxing and not sloped
-			if (!(sector[tspr->sectnum].ceilingstat&3))
+			if (globalpicnum < 3586 || globalpicnum > 3647)
 			{
-				sy0 = ((float)(sector[tspr->sectnum].ceilingz-globalposz))*gyxscale*ryp0 + ghoriz;
-				if (py[0] < sy0) py[0] = py[1] = sy0;
-			}
-			if (!(sector[tspr->sectnum].floorstat&3))
-			{
-				sy0 = ((float)(sector[tspr->sectnum].floorz-globalposz))*gyxscale*ryp0 + ghoriz;
-				if (py[2] > sy0) py[2] = py[3] = sy0;
+				if (!(sector[tspr->sectnum].ceilingstat&3))
+				{
+					sy0 = ((float)(sector[tspr->sectnum].ceilingz-globalposz))*gyxscale*ryp0 + ghoriz;
+					if (py[0] < sy0) py[0] = py[1] = sy0;
+				}
+				if (!(sector[tspr->sectnum].floorstat&3))
+				{
+					sy0 = ((float)(sector[tspr->sectnum].floorz-globalposz))*gyxscale*ryp0 + ghoriz;
+					if (py[2] > sy0) py[2] = py[3] = sy0;
+				}
 			}
 
 			drawpoly(px,py,4,method);

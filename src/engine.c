@@ -10182,10 +10182,11 @@ void setpalettefade(unsigned char r, unsigned char g, unsigned char b, unsigned 
 	int i,k;
 	palette_t p;
 
+	if (offset > 63) offset = 63;
 	palfadergb.r = min(63,r) << 2;
 	palfadergb.g = min(63,g) << 2;
 	palfadergb.b = min(63,b) << 2;
-	palfadedelta = min(63,offset) << 2;
+	palfadedelta = offset << 2;
 
 	k = 0;
 	for (i=0;i<256;i++) {

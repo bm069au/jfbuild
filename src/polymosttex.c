@@ -701,6 +701,96 @@ static int pt_load_art(PTHead * pth)
 					wpptr->b = britable[curbrightness][ curpalette[dacol].b ];
 				}
 
+				// Shadow Warrior radiation cloud (tiles 3606..3623): apply Shadow Warrior's
+				// smoky sage-green PALETTE_PLAYER6 gradient and feathered rim alpha.
+				if (pth->picnum >= 3606 && pth->picnum <= 3623 && dacol >= 99 && dacol <= 126) {
+					int t = dacol - 99; // 0 (darkest outer rim) .. 27 (brightest billow core)
+					int r_val = 20 + (t * 116) / 27;
+					int g_val = 24 + (t * 136) / 27;
+					int b_val = 14 + (t * 98) / 27;
+					if (!usegammabrightness) {
+						r_val = britable[curbrightness][r_val];
+						g_val = britable[curbrightness][g_val];
+						b_val = britable[curbrightness][b_val];
+					}
+					wpptr->r = (unsigned char)r_val;
+					wpptr->g = (unsigned char)g_val;
+					wpptr->b = (unsigned char)b_val;
+					if (t < 6) {
+						wpptr->a = (unsigned char)(104 + t * 25); // Soften dark outer rim (passes 0.32 alphacut)
+						hasalpha = 1;
+					}
+				}
+				// Shadow Warrior nuclear mushroom cloud (3586..3605) and secondary fireballs (3626..3647):
+				// restore exact 50-step lossless SW.GRP RGB palette and feather dark smoke/ember rim.
+				else if ((pth->picnum >= 3586 && pth->picnum <= 3605) || (pth->picnum >= 3626 && pth->picnum <= 3647)) {
+					int r_val = -1, g_val = 0, b_val = 0, a_val = 255;
+					switch (dacol) {
+						case   0: r_val=  0; g_val=  0; b_val=  0; a_val= 96; break; // SW   0
+						case  29: r_val=232; g_val=232; b_val=232; a_val=255; break; // SW   3
+						case  30: r_val=252; g_val=236; b_val=220; a_val=255; break; // SW  64
+						case  35: r_val= 32; g_val=  0; b_val=  0; a_val= 96; break; // SW 126
+						case  36: r_val= 60; g_val=  0; b_val=  0; a_val=149; break; // SW 124
+						case  37: r_val= 52; g_val=  0; b_val=  4; a_val=131; break; // SW 108
+						case  38: r_val= 76; g_val=  0; b_val=  0; a_val=184; break; // SW 123
+						case  39: r_val= 56; g_val= 32; b_val= 28; a_val=140; break; // SW  58
+						case  40: r_val=104; g_val=  0; b_val=  0; a_val=255; break; // SW 121
+						case  41: r_val=124; g_val= 16; b_val=  0; a_val=255; break; // SW 252
+						case  42: r_val= 92; g_val= 40; b_val= 24; a_val=219; break; // SW  87
+						case  43: r_val=116; g_val= 24; b_val= 32; a_val=255; break; // SW 102
+						case  44: r_val=108; g_val= 52; b_val= 32; a_val=255; break; // SW  85
+						case  45: r_val=140; g_val=  8; b_val=  0; a_val=255; break; // SW 251
+						case  62: r_val=232; g_val=212; b_val=160; a_val=255; break; // SW 240
+						case 130: r_val= 48; g_val=  0; b_val=  0; a_val=123; break; // SW 125
+						case 131: r_val= 64; g_val=  4; b_val=  4; a_val=158; break; // SW 107
+						case 132: r_val= 72; g_val=  8; b_val=  8; a_val=175; break; // SW 106
+						case 133: r_val= 84; g_val= 12; b_val= 16; a_val=201; break; // SW 105
+						case 134: r_val= 96; g_val= 16; b_val= 20; a_val=228; break; // SW 104
+						case 135: r_val=108; g_val= 20; b_val= 28; a_val=255; break; // SW 103
+						case 136: r_val=124; g_val= 28; b_val= 32; a_val=255; break; // SW 101
+						case 137: r_val=132; g_val= 32; b_val= 36; a_val=255; break; // SW 100
+						case 138: r_val=140; g_val= 36; b_val= 40; a_val=255; break; // SW  99
+						case 139: r_val=152; g_val= 44; b_val= 44; a_val=255; break; // SW  98
+						case 140: r_val=180; g_val= 16; b_val= 16; a_val=255; break; // SW 114
+						case 141: r_val=192; g_val= 20; b_val= 20; a_val=255; break; // SW 113
+						case 142: r_val=172; g_val= 12; b_val= 12; a_val=255; break; // SW 115
+						case 144: r_val=108; g_val= 12; b_val=  4; a_val=255; break; // SW 253
+						case 168: r_val= 96; g_val= 24; b_val=  8; a_val=228; break; // SW 254
+						case 192: r_val= 88; g_val=  0; b_val=  0; a_val=210; break; // SW 122
+						case 193: r_val=116; g_val=  0; b_val=  0; a_val=255; break; // SW 120
+						case 194: r_val=132; g_val=  0; b_val=  0; a_val=255; break; // SW 119
+						case 195: r_val=140; g_val=  0; b_val=  0; a_val=255; break; // SW 118
+						case 196: r_val=152; g_val=  4; b_val=  4; a_val=255; break; // SW 117
+						case 197: r_val=156; g_val= 28; b_val=  4; a_val=255; break; // SW 250
+						case 198: r_val=176; g_val= 56; b_val= 12; a_val=255; break; // SW 249
+						case 200: r_val=196; g_val= 80; b_val= 20; a_val=255; break; // SW 248
+						case 201: r_val=204; g_val=116; b_val= 40; a_val=255; break; // SW 246
+						case 202: r_val=208; g_val=132; b_val= 52; a_val=255; break; // SW 245
+						case 203: r_val=212; g_val=140; b_val= 56; a_val=255; break; // SW 244
+						case 204: r_val=220; g_val=156; b_val= 80; a_val=255; break; // SW 243
+						case 205: r_val=224; g_val=176; b_val=104; a_val=255; break; // SW 242
+						case 210: r_val=200; g_val= 96; b_val= 36; a_val=255; break; // SW 247
+						case 216: r_val=216; g_val=196; b_val= 80; a_val=255; break; // SW 129
+						case 217: r_val=224; g_val=208; b_val= 88; a_val=255; break; // SW 128
+						case 219: r_val=228; g_val=196; b_val=132; a_val=255; break; // SW 241
+						case 236: r_val=160; g_val= 48; b_val= 48; a_val=255; break; // SW  97
+						case 237: r_val=168; g_val= 52; b_val= 52; a_val=255; break; // SW  96
+						case 238: r_val=160; g_val=  8; b_val=  8; a_val=255; break; // SW 116
+					}
+					if (r_val >= 0) {
+						if (!usegammabrightness) {
+							r_val = britable[curbrightness][r_val];
+							g_val = britable[curbrightness][g_val];
+							b_val = britable[curbrightness][b_val];
+						}
+						wpptr->r = (unsigned char)r_val;
+						wpptr->g = (unsigned char)g_val;
+						wpptr->b = (unsigned char)b_val;
+						wpptr->a = (unsigned char)a_val;
+						if (a_val < 255) hasalpha = 1;
+					}
+				}
+
 				if (dacol >= polymosttexfullbright && dacol < 255) {
 					*fpptr = *wpptr;
 					hasfullbright = 1;
